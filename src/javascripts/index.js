@@ -11,7 +11,7 @@ import "bootstrap"
 
 function displayCard(c) {
     return `
-    <div class="card">
+    <div class="card" data-title="${c.title}">
           <img src="${c.poster}" class="card-img-top" alt="...">
           <div class="card-body">
             <h5 class="card-title">${c.title}</h5>
@@ -32,6 +32,24 @@ function displayCards() {
         col.innerHTML = displayCard(c)
         document.querySelector("#cards").appendChild(col)
     }
+
+    document.querySelectorAll("button.btn-danger").forEach(function(b) {
+        b.onclick = function(event) {
+            let cards = JSON.parse(localStorage.getItem("cards") || "[]")
+            let ndx = -1
+            for (let i in cards) {
+                if (cards[i].title === event.target.closest('.card').dataset.title) {
+                    ndx = i
+                    break
+                }
+            }
+            if (ndx != -1) {
+                cards.splice(ndx, 1)
+                localStorage.setItem("cards", JSON.stringify(cards))
+                location.reload()
+            }
+        }
+    })
 }
 
 function addNewCard(event) {
@@ -65,4 +83,5 @@ document.querySelector("#cancel-btn").onclick = function() {
     document.querySelector('#myForm').classList.add('d-none')
 }
 
-document.forms[0].addEventListener('submit', addNewCard, false)
+document.querySelector("#myForm").addEventListener('submit', addNewCard, false)
+displayCards()
